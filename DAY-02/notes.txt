@@ -37,7 +37,7 @@ Kubernetes cluster
 PASS ANGELS TECHNOLOGIES: +44-7405330007/+91-9490000198
 ==============================================================================================================================
 
-Agenda: Kubernetes Setup Using Kubeadm In AWS EC2 Ubuntu Servers Container-D As Runtime
+Agenda: Kubernetes Setup Using Kubeadm In AWS EC2 Ubuntu Servers 'containerd' As Runtime(in place of docker runtime)
 =======
 
 Prerequisite:
