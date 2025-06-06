@@ -24,9 +24,9 @@ Kubernetes cluster
 --> If any failure in the pod, It will taken care by k8s. If any failure in the nodes, cloud will  handle manually. we need to fix it
 
 
-1 master
+1 master node or control plane
 
-2 salve nodes
+2 worker nodes
 
 
 
@@ -45,14 +45,25 @@ Prerequisite:
 
 3 - Ubuntu Serves
 
-1 - master  (4GB RAM , 2 Core) t2.medium
+1 - master node  (4GB RAM , 2 Core) t2.medium
 
-2 - Workers  (1 GB, 1 Core)     t2.micro
+2 - Worker nodes (1 GB, 1 Core)     t2.micro
 
 
 Note: Open Required Ports In AWS Security Groups. For now we will open All trafic.
 
-==========COMMON FOR MASTER & SLAVES START ====
+api server - 6443 (api server-kubelet,kubectl connect here)
+scheduler - 10259
+controller-manager - 10257
+etcd - 2379-2380
+kubelet API -10250 (used by control plane)
+kube-proxy -
+
+30000-32767 - NodePort services( expose services via NodePort)
+
+
+
+==============COMMON FOR BOTHE MASTER & WORKER NODES ==============================================
 
 1) Switch to root user
    
@@ -68,7 +79,7 @@ swapoff -a
 sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 
 
-3) Add  kernel settings & Enable IP tables(CNI Prerequisites)-Communication b/w POD to POD
+3) Add  kernel settings & Enable IP tables(CNI(container network interface Prerequisites)-Communication b/w POD to POD
 
 https://kubernetes.io/docs/setup/production-environment/container-runtimes/
 ============================================================================
@@ -177,6 +188,7 @@ apt-get update
 apt-get install -y kubelet kubeadm kubectl
 
 # apt-mark hold will prevent the package from being automatically upgraded or removed.
+
 apt-mark hold kubelet kubeadm kubectl
 
 
@@ -187,12 +199,12 @@ systemctl start kubelet
 systemctl enable kubelet.service
 
 
-==========COMMON FOR MASTER & SLAVES END ====
+==================COMMON FOR MASTER & WORKER NODES END =================================================
 
 
 
    
-===========In Master Node Start====================
+=======================In Master Node Start====================
 
 https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/create-cluster-kubeadm/
 ==============================================================================================
@@ -217,6 +229,7 @@ IF Error
 
 
 # Configure kubectl  exit as root user & exeucte as normal ubuntu user
+
 exit
 
 mkdir -p $HOME/.kube
@@ -230,7 +243,7 @@ kubectl get nodes
 
 kubectl get pods -o wide -n kube-system
 
-#You will notice from the previous command, that all the pods are running except one: ‘core-dns’. For resolving this we will install a # pod network addon like Calico or Weavenet ..etc. 
+#You will notice from the previous command, that all the pods are running except one: ‘core-dns’. For resolving this we will have to install a # pod network addon like Calico or Weavenet ..etc. 
 
 
 Note: Install any one network addon don't install both. Install either weave net or calico.
@@ -244,24 +257,24 @@ To install Weave net run the following command.
 https://www.weave.works/docs/net/latest/kubernetes/kube-addon/
 ================================================================
 
-kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
+$kubectl apply -f https://github.com/weaveworks/weave/releases/download/v2.8.1/weave-daemonset-k8s.yaml
 
 Or To install the calico network addon, run the following command:
 
-#kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml 
+$kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml 
 
 
-kubectl get nodes
+$kubectl get nodes
 
-kubectl get pods 
-kubectl get pods --all-namespaces
+$kubectl get pods 
+$kubectl get pods --all-namespaces
 
 
 # Get token
 
 kubeadm token create --print-join-command
 
-=========In Master Node End====================
+==================================In Master Node End========================================================
 
 
 Add Worker Machines to Kubernates Master
