@@ -182,3 +182,112 @@ roleRef:
   name: dev-reader
   apiGroup: rbac.authorization.k8s.io
 
+==================================================================================================================
+
+
+## 📌 4. Monitoring
+
+---
+
+### 🔹 a. Any experience with ELK, Grafana?
+
+### ✅ ELK Stack (Elasticsearch, Logstash, Kibana)
+
+Yes — I have worked with the ELK stack for centralized log management.
+
+- **Elasticsearch**: Stores indexed logs
+- **Logstash**: Ingests and parses logs
+- **Kibana**: Visualizes and queries logs
+
+### ✅ Use Case:
+> We used ELK to collect logs from EC2, Lambda, and application containers.
+> - Logstash was configured to pull logs from S3 and CloudWatch using input plugins.
+> - Elasticsearch hosted on an EC2 instance stored parsed logs.
+> - Kibana dashboards helped devs debug 500 errors by filtering logs by timestamp, service, and environment (dev/staging/prod).
+
+---
+
+### 🔹 b. ELK Setup You Worked On?
+
+Yes — here is a simplified **ELK architecture** I implemented:
+
+### ✅ Setup Steps:
+1. **Provision EC2 Instances** for:
+   - Elasticsearch
+   - Logstash
+   - Kibana (or use Elastic Cloud for managed service)
+
+2. **Install and configure Logstash**:
+```bash
+input {
+  file {
+    path => "/var/log/app/*.log"
+    start_position => "beginning"
+  }
+}
+filter {
+  grok {
+    match => { "message" => "%{TIMESTAMP_ISO8601:timestamp} %{LOGLEVEL:level} %{GREEDYDATA:message}" }
+  }
+}
+output {
+  elasticsearch {
+    hosts => ["http://localhost:9200"]
+    index => "app-logs-%{+YYYY.MM.dd}"
+  }
+}
+```
+
+3. **Install Kibana**, configure connection to Elasticsearch.
+4. Create **dashboards and visualizations** based on log-level, service name, error patterns.
+
+### ✅ Use Case:
+> This helped the support team monitor all microservice logs in one place and filter errors by component or environment. It also replaced manual log grepping across instances.
+
+---
+
+### 🔹 c. Any experience with New Relic? Please explain the setup steps.
+
+Yes — I have used New Relic for full-stack observability including **APM (Application Performance Monitoring)**, **infrastructure monitoring**, and **synthetic checks**.
+
+### ✅ New Relic Setup Steps:
+
+#### 🔧 Application (APM) Setup:
+1. **Install New Relic agent** in your app:
+   - For Python: `pip install newrelic`
+   - For Node.js: `npm install newrelic`
+2. Configure `newrelic.ini` or `newrelic.js` with your **license key**.
+3. Wrap the application with the agent:
+   ```bash
+   NEW_RELIC_CONFIG_FILE=newrelic.ini python app.py
+   ```
+
+#### 🔧 Infrastructure Monitoring:
+1. Install New Relic Infrastructure Agent on EC2:
+   ```bash
+   curl -o - https://download.newrelic.com/infrastructure_agent/gpg/newrelic-infra.gpg | sudo apt-key add -
+   echo "deb [arch=amd64] https://download.newrelic.com/infrastructure_agent/linux/apt focal main" | sudo tee /etc/apt/sources.list.d/newrelic-infra.list
+   sudo apt-get update
+   sudo apt-get install newrelic-infra -y
+   ```
+
+2. Add your license key in `/etc/newrelic-infra.yml`.
+
+#### 🔧 Create Dashboards:
+- Use New Relic One to build custom dashboards with:
+  - **APM traces**
+  - **Error rate**
+  - **DB query performance**
+  - **External services latency**
+
+### ✅ Use Case:
+> We used New Relic to identify slow API endpoints in a Django app.
+> It helped reduce response times by identifying N+1 queries and slow DB calls.
+> New Relic alerts were integrated with Slack to notify the team of high memory usage or 500 error spikes in real time.
+
+
+=============================================================================================================================
+
+
+
+
