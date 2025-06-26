@@ -1,11 +1,16 @@
-Kubernetes Interview Q&A with Examples
-What is a Namespace?
+Kubernetes Interview Q&A (Clearly Formatted)
+========================================
+
+Q1. What is a Namespace?
+------------------------
 A namespace in Kubernetes is a way to divide cluster resources between multiple users. It helps isolate environments (like dev, test, prod) within the same cluster.
 
 Example:
 
 kubectl create namespace dev
-.kubeconfig usage
+
+Q2. .kubeconfig usage
+---------------------
 The .kube/config file contains configuration to connect to Kubernetes clusters (credentials, cluster info, contexts).
 
 Location: ~/.kube/config
@@ -17,15 +22,23 @@ contexts:
   context:
     cluster: dev-cluster
     user: dev-user
-Switch the cluster context from CLI
+
+Q3. Switch the cluster context from CLI
+---------------------------------------
 kubectl config use-context dev-context
-Check the Pod Logs
+
+Q4. Check the Pod Logs
+----------------------
 kubectl logs <pod-name>
 kubectl logs <pod-name> -c <container-name>
-Login to Running Container
+
+Q5. Login to Running Container
+------------------------------
 kubectl exec -it <pod-name> -- /bin/bash
 kubectl exec -it <pod-name> -c <container-name> -- /bin/sh
-What is PV and PVC?
+
+Q6. What is PV and PVC?
+-----------------------
 PV (Persistent Volume): Storage in the cluster.
 PVC (Persistent Volume Claim): Request for storage by user.
 
@@ -41,7 +54,9 @@ spec:
   resources:
     requests:
       storage: 1Gi
-Different Types of Services
+
+Q7. Different Types of Services
+-------------------------------
 ClusterIP: Default, accessible only within cluster.
 NodePort: Exposes service on a static port on each node.
 LoadBalancer: Uses external load balancer.
@@ -61,7 +76,9 @@ spec:
       nodePort: 30080
   selector:
     app: myapp
-Configure Application Load Balancer (ALB)
+
+Q8. Configure Application Load Balancer (ALB)
+---------------------------------------------
 For EKS: Use AWS ALB Ingress Controller.
 
 Example:
@@ -83,20 +100,30 @@ spec:
             name: myservice
             port:
               number: 80
-Expose Ports
+
+Q9. Expose Ports
+----------------
 kubectl expose deployment myapp --type=NodePort --port=80 --target-port=8080
-Port Forwarding
+
+Q10. Port Forwarding
+-------------------
 kubectl port-forward svc/myservice 8080:80
 # Now access the service via http://localhost:8080
-EKS Versions Worked On
+
+Q11. EKS Versions Worked On
+--------------------------
 Worked on EKS versions like 1.21, 1.22, and recently upgraded to 1.24.
-EKS Upgrade Experience
+
+Q12. EKS Upgrade Experience
+--------------------------
 Performed in-place upgrades using AWS Console and CLI. Steps included:
 - Backing up cluster configs
 - Draining nodes
 - Upgrading EKS version
 - Updating node groups and validating workloads post-upgrade
-What are ConfigMaps?
+
+Q13. What are ConfigMaps?
+------------------------
 ConfigMaps store non-sensitive key-value pairs (e.g., config settings).
 
 Example:
@@ -107,7 +134,9 @@ metadata:
   name: app-config
 data:
   LOG_LEVEL: debug
-Secrets vs ConfigMaps
+
+Q14. Secrets vs ConfigMaps
+-------------------------
 Secrets store sensitive data (e.g., passwords, tokens).
 
 Example:
@@ -123,7 +152,9 @@ data:
 Difference:
 - ConfigMap: Plaintext data
 - Secret: Encoded/encrypted data for sensitive info
-Role-Based Access Control (RBAC)
+
+Q15. Role-Based Access Control (RBAC)
+------------------------------------
 RBAC defines permissions for users/groups to perform actions.
 
 Example:
@@ -150,3 +181,4 @@ roleRef:
   kind: Role
   name: dev-reader
   apiGroup: rbac.authorization.k8s.io
+
