@@ -113,7 +113,9 @@ select the EKS IAM role --> permissions --> add permissions --> Attach policies 
 step 3: Install the clusterAutoAscaller
 -------
 
-link: https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/README.md
+link: 
+
+https://github.com/kubernetes/autoscaler/blob/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
 
 
 kubectl apply -f examples/cluster-autoscaler-autodiscover.yaml
