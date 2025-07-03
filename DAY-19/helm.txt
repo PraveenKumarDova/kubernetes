@@ -137,10 +137,10 @@ How to deploy third party applications like metrics server, prometheus, etc ?
 
 EX: metrics server
 
-kubectl config current-context  --> to check the correct environment 
+$kubectl config current-context  --> to check the correct environment 
 
-kubectl top nodes
-kubectl top pods
+$kubectl top nodes
+$kubectl top pods
 
 
 url: https://artifacthub.io/
@@ -151,28 +151,28 @@ url: https://artifacthub.io/packages/helm/metrics-server/metrics-server
 
 How to check helm repo added or not?
 
-helm repo ls
+$helm repo ls
 
 How to add helm repo?
 
-helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
+$helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/
 
 
 
 
-helm repo ls
+$helm repo ls
 
 How to search chart for that repo?
 
-helm search repo metrics-server
+$helm search repo metrics-server
 
 How to see the default values of that chart?
 
-helm show values metrics-server/metrics-server
+$helm show values metrics-server/metrics-server
 
-How to see the template(all yaml files) ?
+How to see the template(all the yaml files) ?
 
-helm template metrics-server/metrics-server
+$helm template metrics-server/metrics-server
 
 
 
@@ -180,17 +180,17 @@ helm template metrics-server/metrics-server
 
 How to install/deploy the chart?
 
-helm upgrade --install metrics-server metrics-server/metrics-server -n test-ns --dry-run
+$helm upgrade --install metrics-server metrics-server/metrics-server -n test-ns --dry-run
 
-helm upgrade --install metrics-server metrics-server/metrics-server --set replicas=2 -n test-ns --dry-run
+$helm upgrade --install metrics-server metrics-server/metrics-server --set replicas=2 -n test-ns --dry-run
 
-helm upgrade --install metrics-server metrics-server/metrics-server -n test-ns --dry-run
+$helm upgrade --install metrics-server metrics-server/metrics-server -n test-ns --dry-run
 
-helm upgrade --install metrics-server metrics-server/metrics-server -n test-ns
+$helm upgrade --install metrics-server metrics-server/metrics-server -n test-ns
 
-helm ls -A
+$helm ls -A
 
-helm ls -n kube-system
+$helm ls -n kube-system
 
 
 
@@ -199,19 +199,19 @@ helm ls -n kube-system
 increased to 2 replicas???
 --------------------------
 
-helm upgrade --install metrics-server metrics-server/metrics-server --set replicas=3
+$helm upgrade --install metrics-server metrics-server/metrics-server --set replicas=3
 
 How to rollback?
 -----------------
 
-helm ls
+$helm ls
 
-helm rollback metrics-server
+$helm rollback metrics-server
 
 How to uninsatll?
 ----------------
 
-helm uninstall metrics-server
+$helm uninstall metrics-server
 
 
 
@@ -220,7 +220,7 @@ helm uninstall metrics-server
 NOTE: If you want to pass more values through --set is not a good practise, so we need to use values.yaml
 
 
-helm show values metrics-server/metrics-server
+$helm show values metrics-server/metrics-server
 
 vi metricservervalues.yaml
 
@@ -231,9 +231,9 @@ resources:
 replicas: 2
 
 
-helm upgrade --install metrics-server -f metricservervalues.yaml metrics-server/metrics-server
+$helm upgrade --install metrics-server -f metricservervalues.yaml metrics-server/metrics-server
 
-kubectl describe po <pod-name> --> to see the updated values
+$kubectl describe po <pod-name> --> to see the updated values
 
 
 --> create a production cluster separate values.yaml and deploy
@@ -251,7 +251,7 @@ Step 1: Create a Helm Chart
 -------
 First, create a new Helm chart:
 
-helm create javawebapp
+$helm create javawebapp
 
 This will create a directory structure like this:
 
@@ -347,29 +347,29 @@ Step 6: Deploy the Helm Chart
 
 Now that you have created your Helm chart, you can install it using the following command:
 
-helm install <release-name> ./javawebapp
+$helm install <release-name> ./javawebapp
 
-helm upgrade --install javawebapp ./javawebapp  --dry-run
+$helm upgrade --install javawebapp ./javawebapp  --dry-run
 
 
 ========
 
 
 
-helm create <chartName>
+$helm create <chartName>
 
-helm lint <chartName> --> for validation
+$helm lint <chartName> --> for validation
 
-helm package javawebapp  --> to create a tar file
+$helm package javawebapp  --> to create a tar file
 
-helm upgrade --install mavenwebapp mavenwebapp-0.1.0.tgz -n prod
+$helm upgrade --install mavenwebapp mavenwebapp-0.1.0.tgz -n prod
 
-helm show values mavenwebapp-0.1.0.tgz
+$helm show values mavenwebapp-0.1.0.tgz
 
-helm status <resourceName> --show-resources -n test-ns
+$helm status <resourceName> --show-resources -n test-ns
 
 
-helm uninstall mavenwebapp -n <NS>
+$helm uninstall mavenwebapp -n <NS>
 
 
 ==========================================================================
