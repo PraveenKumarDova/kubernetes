@@ -90,8 +90,9 @@ Schedule Pods only on Nodes in Region `us-east` and Zone `zone1`.
 
 1. Label Nodes:
 ```bash
-kubectl label nodes node1 region=us-east zone=zone1
-kubectl label nodes node2 region=us-west zone=zone2
+kubectl label nodes ip-192-168-17-235.ap-south-1.compute.internal region=ap-south-1 zone=ap-south-1c
+kubectl label nodes ip-192-168-59-88.ap-south-1.compute.internal region=ap-south-1 zone=ap-south-1a
+
 ```
 
 2. Check Labels:
