@@ -1,11 +1,10 @@
-
-# Kubernetes Init Containers & Sidecar Containers 
+# Kubernetes Init Containers & Sidecar Containers
 
 ---
 
 ## 1. Init Containers Example (Pre-Start Tasks)
 
-Purpose:  
+**Purpose:**  
 Init containers run before the main app container starts. They are useful for:
 - Waiting for services
 - Setting up configs
@@ -15,111 +14,135 @@ Init containers run before the main app container starts. They are useful for:
 
 ### YAML: Init Container Example
 
-apiVersion: v1  
-kind: Pod  
-metadata:  
-  name: init-container-demo  
-  namespace: test-ns  
-spec:  
-  containers:  
-  - name: main-app  
-    image: busybox  
-    command: ['sh', '-c', 'echo Main App Running; sleep 3600']  
-  initContainers:  
-  - name: init-wait  
-    image: busybox  
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: init-container-demo
+  namespace: test-ns
+spec:
+  containers:
+  - name: main-app
+    image: busybox
+    command: ['sh', '-c', 'echo Main App Running; sleep 3600']
+  initContainers:
+  - name: init-wait
+    image: busybox
     command: ['sh', '-c', 'echo Init Task Starting; sleep 10; echo Init Task Done']
+````
 
 ---
 
 ### Commands to Apply & Check Logs:
 
-kubectl apply -f init-container.yaml  
-kubectl get pods -n test-ns -w  
+```bash
+kubectl apply -f init-container.yaml
+kubectl get pods -n test-ns -w
+```
 
-Check Init Container Logs:  
-kubectl logs init-container-demo -n test-ns -c init-wait  
+**Check Init Container Logs:**
 
-Check Main App Logs:  
-kubectl logs init-container-demo -n test-ns -c main-app  
+```bash
+kubectl logs init-container-demo -n test-ns -c init-wait
+```
+
+**Check Main App Logs:**
+
+```bash
+kubectl logs init-container-demo -n test-ns -c main-app
+```
 
 ---
 
 ### Explanation:
-- Init container runs first, waits for 10 seconds, prints logs, then exits.
-- Only after it finishes, the main app starts.
+
+* Init container runs first, waits for 10 seconds, prints logs, then exits.
+* Only after it finishes, the main app starts.
 
 ---
 
 ## 2. Sidecar Containers Example (Run Together)
 
-Purpose:  
+**Purpose:**
 Sidecar containers run together with the main app and are useful for:
-- Logging agents
-- Proxies
-- Monitoring tools
+
+* Logging agents
+* Proxies
+* Monitoring tools
 
 ---
 
 ### YAML: Sidecar Container Example (Log Writer + Log Watcher)
 
-apiVersion: v1  
-kind: Pod  
-metadata:  
-  name: sidecar-container-demo  
-  namespace: test-ns  
-spec:  
-  volumes:  
-  - name: shared-logs  
-    emptyDir: {}  
+```yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sidecar-container-demo
+  namespace: test-ns
+spec:
+  volumes:
+  - name: shared-logs
+    emptyDir: {}
 
-  containers:  
-  - name: main-app  
-    image: busybox  
-    command: ['sh', '-c', 'while true; do echo $(date) Writing Logs >> /logs/app.log; sleep 5; done']  
-    volumeMounts:  
-    - name: shared-logs  
-      mountPath: /logs  
+  containers:
+  - name: main-app
+    image: busybox
+    command: ['sh', '-c', 'while true; do echo $(date) Writing Logs >> /logs/app.log; sleep 5; done']
+    volumeMounts:
+    - name: shared-logs
+      mountPath: /logs
 
-  - name: sidecar-log-watcher  
-    image: busybox  
-    command: ['sh', '-c', 'tail -f /logs/app.log']  
-    volumeMounts:  
-    - name: shared-logs  
-      mountPath: /logs  
+  - name: sidecar-log-watcher
+    image: busybox
+    command: ['sh', '-c', 'tail -f /logs/app.log']
+    volumeMounts:
+    - name: shared-logs
+      mountPath: /logs
+```
 
 ---
 
 ### Commands to Apply & Check Logs:
 
-kubectl apply -f sidecar-container.yaml  
-kubectl get pods -n test-ns -w  
+```bash
+kubectl apply -f sidecar-container.yaml
+kubectl get pods -n test-ns -w
+```
 
-Check Sidecar Container Logs (Tail Logs):  
-kubectl logs sidecar-container-demo -n test-ns -c sidecar-log-watcher  
+**Check Sidecar Container Logs (Tail Logs):**
 
-Check Main App Container Logs:  
-kubectl logs sidecar-container-demo -n test-ns -c main-app  
+```bash
+kubectl logs sidecar-container-demo -n test-ns -c sidecar-log-watcher
+```
 
-You may not see logs in main-app because it writes logs to a file, not stdout.
+**Check Main App Container Logs:**
 
-To Check Logs Inside Container (Verify File Logs):  
-kubectl exec -it sidecar-container-demo -n test-ns -c main-app -- sh  
-cat /logs/app.log  
+```bash
+kubectl logs sidecar-container-demo -n test-ns -c main-app
+```
+
+**To Check Logs Inside Container (Verify File Logs):**
+
+```bash
+kubectl exec -it sidecar-container-demo -n test-ns -c main-app -- sh
+cat /logs/app.log
+```
 
 ---
 
 ### Explanation:
-- Both containers share /logs volume.
-- Main app writes logs to file continuously.
-- Sidecar container tails and prints those logs live.
+
+* Both containers share `/logs` volume.
+* Main app writes logs to file continuously.
+* Sidecar container tails and prints those logs live.
 
 ---
 
 ## Key Differences Between Init & Sidecar Containers
 
-| Feature             | Init Container                        | Sidecar Container                   |
-|---------------------|---------------------------------------|-------------------------------------|
+| Feature             | Init Container                         | Sidecar Container                   |
+| ------------------- | -------------------------------------- | ----------------------------------- |
 | When Runs           | Before main container starts           | Together with main container        |
 | Purpose             | Setup tasks (DB migration, pre-checks) | Helper tasks (logging, monitoring)  |
 | Runs Together?      | No                                     | Yes                                 |
@@ -130,31 +153,38 @@ cat /logs/app.log
 
 ## Diagram (Visual Flow)
 
-+-------------------+      +------------------------+  
-| Init Container(s) | ---> | Main + Sidecar Running |  
-+-------------------+      +------------------------+  
-        (Sequential)                (Parallel)  
+```
++-------------------+      +------------------------+
+| Init Container(s) | ---> | Main + Sidecar Running |
++-------------------+      +------------------------+
+        (Sequential)                (Parallel)
+```
 
 ---
 
 ## Common Trainer Tips:
-- Init Containers always run first and must finish successfully.
-- Sidecar Containers run side by side with main app for additional functionality.
-- Both concepts are common in Microservice & DevOps deployments.
+
+* Init Containers always run first and must finish successfully.
+* Sidecar Containers run side by side with main app for additional functionality.
+* Both concepts are common in Microservice & DevOps deployments.
 
 ---
 
 ## Useful Commands Cheat Sheet:
 
-kubectl get pods -n test-ns -w  
+```bash
+kubectl get pods -n test-ns -w
 
-kubectl logs <pod-name> -n test-ns -c <container-name>  
+kubectl logs <pod-name> -n test-ns -c <container-name>
 
-kubectl exec -it <pod-name> -n test-ns -c <container-name> -- sh  
+kubectl exec -it <pod-name> -n test-ns -c <container-name> -- sh
+```
 
 ---
 
 ### How To Explain in Interviews:
-- Init containers are like pre-flight checks before app launches.
-- Sidecar containers are like helpers that work alongside main apps.
-- Both enhance modularity and reusability of Kubernetes apps.
+
+* **Init containers** are like **pre-flight checks** before the app launches.
+* **Sidecar containers** are like **helpers** that work alongside main apps.
+* Both enhance **modularity** and **reusability** of Kubernetes apps.
+
